@@ -46,3 +46,25 @@ func UpdateBilibiliServiceInfo(serviceInfo types.BilibiliService) {
 		error_nt.SendInfo(err.Error())
 	}
 }
+
+func GetServiceInfoByGroupID(groupID int) *types.BilibiliService {
+	var (
+		err      error
+		db       = g.DB()
+		services = make([]types.BilibiliService, 0)
+	)
+
+	m := db.Model(table.BilibiliService)
+	m.Where("group_id=", groupID)
+	err = m.Scan(&services)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	if len(services) < 1 {
+		return nil
+	}
+
+	return &services[0]
+}

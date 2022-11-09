@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -103,75 +104,6 @@ func handleMsg(data *types.Event) {
 		}
 	}
 
-	switch data.Message {
-	case "--help":
-		var msg string
-
-		var functions = []string{"直播推送", "动态推送"}
-
-		var cmds = []string{"lulu_fans", "lulu_last_dynamic", "lulu_live_status"}
-
-		msg = "——bot 当前支持的命令——\n\n"
-
-		for _, cmd := range cmds {
-			msg += cmd + "\n"
-		}
-
-		msg += "\n——bot 当前支持的功能——\n\n"
-
-		for _, function := range functions {
-			msg += function + "\n"
-		}
-
-		err := client.SendNotificationMsg(data.MessageType, id, msg)
-		if err != nil {
-			log.Println(err)
-		}
-
-	case "lulu_fans":
-		info := client.GetUserStatInfo("387636363")
-
-		msg := fmt.Sprintf("当前粉丝量：%d", info.Data.Follower)
-
-		err := client.SendNotificationMsg(data.MessageType, id, msg)
-		if err != nil {
-			log.Println(err)
-		}
-
-	case "lulu_last_dynamic":
-		var flag int
-
-		info := client.GetSpaceInfo("387636363")
-
-		if info.Data.Items[0].Modules.ModuleTag.Text == "置顶" {
-			flag = 1
-		}
-
-		SendSpaceMsg(info, data.MessageType, id, flag)
-
-	case "lulu_live_status":
-		var msg string
-		info := client.GetLiveRoomInfo(lulu)
-		switch info.Data.LiveStatus {
-		case 0:
-			msg = "雫るる未在直播!\n"
-			//fmt.Sprintf("本次直播时间：%d小时%d分", times/3600, times%3600)
-		case 1:
-			msg = "雫るる直播中!\n" +
-				fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
-				fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
-		case 2:
-			msg = "雫るる轮播中!\n" +
-				fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
-				fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
-		}
-
-		err := client.SendNotificationMsg(data.MessageType, id, msg)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
 	if len(data.Message) > 12 {
 		switch data.Message[0:12] {
 		case "来点色图":
@@ -187,6 +119,86 @@ func handleMsg(data *types.Event) {
 			}()
 
 			err := client.SendNotificationMsg(data.MessageType, id, "正在找色图")
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+
+	if data.MessageType == "group" {
+		srvInfo := dao.GetServiceInfoByGroupID(data.GroupId)
+
+		if srvInfo == nil {
+			return
+		}
+
+		switch data.Message {
+		case "--help":
+			var msg string
+
+			var functions = []string{"直播推送", "动态推送"}
+
+			var cmds = []string{"fans", "last_dynamic", "live_status"}
+
+			msg = "——bot 当前支持的命令——\n\n"
+
+			for _, cmd := range cmds {
+				msg += cmd + "\n"
+			}
+
+			msg += "\n——bot 当前支持的功能——\n\n"
+
+			for _, function := range functions {
+				msg += function + "\n"
+			}
+
+			err := client.SendNotificationMsg(data.MessageType, id, msg)
+			if err != nil {
+				log.Println(err)
+			}
+
+		case "fans":
+			info := client.GetUserStatInfo(strconv.Itoa(srvInfo.UserID))
+
+			userInfo := client.GetCardInfo(srvInfo.UserID)
+
+			msg := fmt.Sprintf("%s 当前粉丝量：%d", userInfo.Data.Card.Name, info.Data.Follower)
+
+			err := client.SendNotificationMsg(data.MessageType, id, msg)
+			if err != nil {
+				log.Println(err)
+			}
+
+		case "last_dynamic":
+			var flag int
+
+			info := client.GetSpaceInfo(strconv.Itoa(srvInfo.UserID))
+
+			if info.Data.Items[0].Modules.ModuleTag.Text == "置顶" {
+				flag = 1
+			}
+
+			SendSpaceMsg(info, data.MessageType, id, flag)
+
+		case "live_status":
+			var msg string
+			userInfo := client.GetCardInfo(srvInfo.UserID)
+			info := client.GetLiveRoomInfo(strconv.Itoa(srvInfo.RoomID))
+			switch info.Data.LiveStatus {
+			case 0:
+				msg = fmt.Sprintf("%s未在直播!\n", userInfo.Data.Card.Name)
+				//fmt.Sprintf("本次直播时间：%d小时%d分", times/3600, times%3600)
+			case 1:
+				msg = fmt.Sprintf("%s直播中!\n", userInfo.Data.Card.Name) +
+					fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
+					fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
+			case 2:
+				msg = fmt.Sprintf("%s轮播中!\n", userInfo.Data.Card.Name) +
+					fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
+					fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
+			}
+
+			err := client.SendNotificationMsg(data.MessageType, id, msg)
 			if err != nil {
 				log.Println(err)
 			}
