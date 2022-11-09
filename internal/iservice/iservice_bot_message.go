@@ -10,14 +10,11 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"sync"
 	"time"
 )
 
-const (
-	lulu = "21013446"
-
-	myselfId = 1131568220
-)
+var tarotTime sync.Map
 
 var lastTime int64
 
@@ -48,7 +45,7 @@ func SendNotification(info *types.LiveRoomInfo, times, beforeStatus int64, group
 			fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
 	}
 
-	err := client.SendNotificationMsg("private", myselfId, msg)
+	err := client.SendNotificationMsg("private", config.Srv.Bot.QQ, msg)
 	if err != nil {
 		log.Println(err)
 		error_nt.SendInfo(err.Error())
@@ -106,6 +103,7 @@ func handleMsg(data *types.Event) {
 
 	if len(data.Message) > 12 {
 		switch data.Message[0:12] {
+
 		case "来点色图":
 			if (time.Now().Unix() - lastTime) < 10 {
 				err := client.SendNotificationMsg(data.MessageType, id, fmt.Sprintf("CD中...%d", 10-(time.Now().Unix()-lastTime)))
@@ -133,6 +131,22 @@ func handleMsg(data *types.Event) {
 		}
 
 		switch data.Message {
+		case "抽卡":
+			key := data.Sender.UserId
+
+			if v, ok := tarotTime.Load(key); ok {
+				if (time.Now().Unix() - v.(int64)) < (60 * 60 * 24) {
+					err := client.SendNotificationMsg(data.MessageType, id, "你今天已经抽过卡啦~")
+					if err != nil {
+						log.Println(err)
+					}
+					return
+				}
+			}
+
+			tarotTime.Store(key, time.Now().Unix())
+
+			tarot(data)
 		case "--help":
 			var msg string
 
@@ -254,16 +268,32 @@ func SendHPic(tag string, id int, target string) {
 	if len(tags) == 0 {
 		tags = append(tags, tag)
 	}
-	picInfo := client.GetPic(tags)
+
+	var r18 int
+
+	if id == 1131569220 {
+		r18 = 1
+	}
+
+	picInfo := client.GetPic(tags, r18)
 
 	var msg string
 
+	if picInfo.Detail == "色图库中没找到色图~" {
+		msg = "色图库中没找到色图~"
+		err := client.SendNotificationMsg(target, id, msg)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
 	if len(picInfo.Data) > 0 {
 		msg = fmt.Sprintf("标题：%s \n PID:%d\n ", picInfo.Data[0].Artwork.Title, picInfo.Data[0].Artwork.Id)
-		msg += fmt.Sprintf("Medium:%s\n ", picInfo.Data[0].Urls.Medium)
+		msg += fmt.Sprintf("Medium:%s\n ", picInfo.Data[0].Urls.Original)
 		//msg += fmt.Sprintf("Large:%s\n ", picInfo.Data[0].Urls.Large)
 		//msg += fmt.Sprintf("Medium:%s\n ", picInfo.Data[0].Urls.Medium)
-		//msg += fmt.Sprintf("[CQ:image,file=%s]", picInfo.Data[0].Urls.Medium)
+		msg += fmt.Sprintf("[CQ:image,file=%s]", picInfo.Data[0].Urls.Medium)
 	} else {
 		msg = "没有找到对应tag的图片"
 	}

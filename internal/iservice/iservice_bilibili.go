@@ -16,6 +16,7 @@ import (
 var ctxMap sync.Map
 
 func NewLiveServiceAdd(service types.BilibiliService) {
+	var err error
 	key := strconv.Itoa(service.RoomID) + "_" + strconv.Itoa(service.GroupID)
 
 	if _, ok := ctxMap.Load(key); ok {
@@ -28,19 +29,19 @@ func NewLiveServiceAdd(service types.BilibiliService) {
 
 	go NotificationService(ctx, service.RoomID, service.GroupID)
 
-	err := client.SendNotificationMsg(
-		"group",
-		service.GroupID,
-		fmt.Sprintf(
-			"New live service has been created,RoomID:%d\n,GroupID:%d\n",
-			service.RoomID,
-			service.GroupID,
-		),
-	)
-	if err != nil {
-		log.Println(err)
-		error_nt.SendInfo(err.Error())
-	}
+	//err = client.SendNotificationMsg(
+	//	"group",
+	//	service.GroupID,
+	//	fmt.Sprintf(
+	//		"New live service has been created,RoomID:%d\n,GroupID:%d\n",
+	//		service.RoomID,
+	//		service.GroupID,
+	//	),
+	//)
+	//if err != nil {
+	//	log.Println(err)
+	//	error_nt.SendInfo(err.Error())
+	//}
 
 	err = client.SendNotificationMsg(
 		"private",
@@ -58,6 +59,7 @@ func NewLiveServiceAdd(service types.BilibiliService) {
 }
 
 func NewSpaceServiceAdd(service types.BilibiliService) {
+	var err error
 	key := strconv.Itoa(service.UserID) + "_" + strconv.Itoa(service.GroupID)
 
 	if _, ok := ctxMap.Load(key); ok {
@@ -70,19 +72,19 @@ func NewSpaceServiceAdd(service types.BilibiliService) {
 
 	go Space(ctx, service.UserID, service.GroupID)
 
-	err := client.SendNotificationMsg(
-		"group",
-		service.GroupID,
-		fmt.Sprintf(
-			"New space service has been created,UserID:%d\n,GroupID:%d\n",
-			service.UserID,
-			service.GroupID,
-		),
-	)
-	if err != nil {
-		log.Println(err)
-		error_nt.SendInfo(err.Error())
-	}
+	//err = client.SendNotificationMsg(
+	//	"group",
+	//	service.GroupID,
+	//	fmt.Sprintf(
+	//		"New space service has been created,UserID:%d\n,GroupID:%d\n",
+	//		service.UserID,
+	//		service.GroupID,
+	//	),
+	//)
+	//if err != nil {
+	//	log.Println(err)
+	//	error_nt.SendInfo(err.Error())
+	//}
 
 	err = client.SendNotificationMsg(
 		"private",

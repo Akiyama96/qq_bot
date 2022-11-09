@@ -17,9 +17,10 @@ POST  https://setu.yuban10703.xyz/setu
 Content-Type: application/json
 
 {
-  "r18"	:1,
+  "r18"	:0,
   "num"	: 1,
-  "replace_url": "https://i.pixiv.re"
+  "replace_url": "https://i.pixiv.re",
+  "tags":   [""]
 }
 
 ###
@@ -28,4 +29,12 @@ Content-Type: application/json
 
 {
   "url": "https://i.pixiv.cat/c/600x1200_90_webp/img-master/img/2021/06/07/12/05/13/90388686_p0_master1200.jpg"
+}
+
+###
+POST https://lolisuki.cc/api/setu/v1
+Content-Type: application/json
+
+{
+  "num":1
 }
