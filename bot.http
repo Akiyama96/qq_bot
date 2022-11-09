@@ -1,0 +1,111 @@
+
+
+###获取账号信息
+POST 192.168.3.224:5700/get_login_info
+
+###获取好友列表
+POST 192.168.3.224:5700/get_friend_list
+
+###发送消息 个人
+POST 192.168.3.224:5700/send_msg
+Content-Type: application/json
+
+{
+  "message_type": "private",
+  "user_id": 1131568220,
+  "message": "hello",
+  "auto_escape": true
+}
+
+###发送消息 群
+POST 192.168.3.224:5700/send_msg
+Content-Type: application/json
+
+{
+  "message_type": "group",
+  "group_id": 837379002,
+  "message": "",
+  "auto_escape": true
+}
+
+###是否可以发送图片
+POST 192.168.3.224:5700//can_send_image
+
+###发送图片
+POST 192.168.3.11:5700/send_msg
+Content-Type: application/json
+
+{
+  "message_type": "private",
+  "user_id": 1131568220,
+  "message": "1[CQ:image,file=http://baidu.com/1.jpg,type=flash]",
+  "auto_escape": false
+}
+
+###
+POST 192.168.3.224:5700/send_msg
+Content-Type: application/json
+
+{
+  "font":0,
+  "message":1,
+  "message_id":3.15195521e+08,
+  "message_type":"private",
+  "post_type":"message",
+  "raw_message":1,
+  "self_id":1.497312823e+09,
+  "sender":{
+    "age":0,
+    "nickname":"Shiina",
+    "sex":"unknown",
+    "user_id":1.13156822e+09
+  },
+  "sub_type":"friend",
+  "target_id":1.497312823e+09,
+  "time":1.667525596e+09,
+  "user_id":1.13156822e+09
+}
+
+###
+POST 192.168.3.224:5700/send_msg
+Content-Type: application/json
+
+{
+"anonymous":"<nil>",
+"font":0,
+"group_id":8.37379002e+08,
+"message":"[CQ:image,file=02a4b397f3e2f4b340193930b524f148.image,subType=1,url=https://gchat.qpic.cn/gchatpic_new/1131568220/837379002-2660721782-02A4B397F3E2F4B340193930B524F148/0?term=3&amp;is_origin=0]",
+"message_id":-1.70696513e+08,
+"message_seq":265760,
+"message_type":"group",
+"post_type":"message",
+"raw_message":"[CQ:image,file=02a4b397f3e2f4b340193930b524f148.image,subType=1,url=https://gchat.qpic.cn/gchatpic_new/1131568220/837379002-2660721782-02A4B397F3E2F4B340193930B524F148/0?term=3&amp;is_origin=0]",
+"self_id":1.497312823e+09,
+"sender": {
+  "age":0,
+  "area":0,
+  "card":"【翻轴】みお",
+  "level":1,
+  "nickname":"Shiina",
+  "role":"member",
+  "sex":"unknown",
+  "title": "",
+  "user_id":1.13156822e+09
+},
+"sub_type":"normal",
+"time":1.667525889e+09,
+"user_id":1.13156822e+09
+}
+
+###tarot cards
+GET https://rws-cards-api.herokuapp.com/api/v1/cards/random?n=1
+Content-Type: application/json
+
+{
+  "name": "lulu",
+  "user_id":387636363,
+  "room_id":21013446,
+  "group_id": 837379002,
+  "space_notification": 1,
+  "live_notification": 0
+}

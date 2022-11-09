@@ -1,0 +1,29 @@
+# 数据库配置
+database:
+  logger:
+    path: "../data/log"             # 日志文件路径。默认为空，表示关闭，仅输出到终端
+    file: "{Y-m-d}-sql.log"         # 日志文件格式。默认为"{Y-m-d}.log"
+    stdout: false
+  default:
+    host: "192.168.3.11"           # 地址
+    port: "3306"                   # 端口
+    user: "root"                   # 账号
+    pass: "9696"                   # 密码
+    name: "qq_bot"                 # 数据库名称
+    type: "mysql"                  # 数据库类型(mysql/pgsql/mssql/sqlite/oracle)
+    role: "master"                 # "(可选)数据库主从角色(master/slave)，不使用应用层的主从机制请均设置为master"
+    debug: "true"                  # "(可选)开启调试模式
+    maxIdle: "50"                  # "(可选)连接池最大闲置的连接数"
+    maxOpen: "100"                 # "(可选)连接池最大打开的连接数"
+
+# http服务配置
+http:
+  isEnable: true           # http服务是否开启
+  address: "192.168.3.96"  # http服务地址
+  port: 5701               # http端口
+
+# qq_bot服务配置
+bot:
+  address: "192.168.3.11"    # http服务地址
+  port: 5700                 # http端口
+  qq: 1131568220             # 通知到的qq

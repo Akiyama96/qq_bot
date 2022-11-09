@@ -1,0 +1,31 @@
+###获取直播间信息
+GET https://api.live.bilibili.com/room/v1/Room/get_info?room_id=21013446
+
+
+###获取用户动态
+GET https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=&host_mid=387636363&timezone_offset=-480
+
+
+###获取用户信息
+GET https://api.bilibili.com/x/relation/stat?vmid=387636363&jsonp=jsonp
+
+###获取用户信息info
+GET https://api.bilibili.com/x/web-interface/card?mid=387636363
+
+###
+POST  https://setu.yuban10703.xyz/setu
+Content-Type: application/json
+
+{
+  "r18"	:1,
+  "num"	: 1,
+  "replace_url": "https://i.pixiv.re"
+}
+
+###
+POST https://mio30.icu:20020/pic/s
+Content-Type: application/json
+
+{
+  "url": "https://i.pixiv.cat/c/600x1200_90_webp/img-master/img/2021/06/07/12/05/13/90388686_p0_master1200.jpg"
+}
