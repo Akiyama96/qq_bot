@@ -27,18 +27,19 @@ func SendNotification(info *types.LiveRoomInfo, times, beforeStatus int64, group
 	case 0:
 		if beforeStatus == 1 {
 			msg = fmt.Sprintf("%s下播啦!\n", userInfo.Data.Card.Name) +
-				fmt.Sprintf("本次直播时间：%d小时%d分", times/3600, times%3600)
+				fmt.Sprintf("本次直播时间：%d小时%d分", times/3600, (times%3600)/60)
 		}
 	case 1:
 		if beforeStatus == 0 || beforeStatus == 2 {
 			msg = fmt.Sprintf("%s开播啦!\n", userInfo.Data.Card.Name) +
 				fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
-				fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
+				fmt.Sprintf("当前有%d人正在观看~\n", info.Data.Online) +
+				fmt.Sprintf("[CQ:image,file=%s]", info.Data.UserCover)
 		}
 	case 2:
 		if beforeStatus == 1 {
 			msg = fmt.Sprintf("%s下播啦!\n", userInfo.Data.Card.Name) +
-				fmt.Sprintf("本次直播时间：%d小时%d分\n", times/3600, times%3600)
+				fmt.Sprintf("本次直播时间：%d小时%d分\n", times/3600, (times%3600)/60)
 		}
 		msg += fmt.Sprintf("%s轮播中\n", userInfo.Data.Card.Name) +
 			fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
@@ -101,6 +102,16 @@ func handleMsg(data *types.Event) {
 		}
 	}
 
+	if len(data.Message) > 22 {
+		if data.Message[0:21] == "[CQ:at,qq=1497312823]" {
+			client.Xiaoai(data.MessageType, id, data.Message)
+			//err := client.SendNotificationMsg(data.MessageType, id, "确实")
+			//if err != nil {
+			//	log.Println(err)
+			//}
+		}
+	}
+
 	if len(data.Message) > 12 {
 		switch data.Message[0:12] {
 
@@ -131,7 +142,7 @@ func handleMsg(data *types.Event) {
 		}
 
 		switch data.Message {
-		case "抽卡":
+		case "&amp;抽卡":
 			key := data.Sender.UserId
 
 			if v, ok := tarotTime.Load(key); ok {
@@ -152,7 +163,7 @@ func handleMsg(data *types.Event) {
 
 			var functions = []string{"直播推送", "动态推送"}
 
-			var cmds = []string{"fans", "last_dynamic", "live_status"}
+			var cmds = []string{"&粉丝数", "&查看动态", "&直播状态", "&抽卡", "&被隐藏的功能"}
 
 			msg = "——bot 当前支持的命令——\n\n"
 
@@ -171,7 +182,7 @@ func handleMsg(data *types.Event) {
 				log.Println(err)
 			}
 
-		case "fans":
+		case "&amp;粉丝数":
 			info := client.GetUserStatInfo(strconv.Itoa(srvInfo.UserID))
 
 			userInfo := client.GetCardInfo(srvInfo.UserID)
@@ -183,7 +194,7 @@ func handleMsg(data *types.Event) {
 				log.Println(err)
 			}
 
-		case "last_dynamic":
+		case "&amp;查看动态":
 			var flag int
 
 			info := client.GetSpaceInfo(strconv.Itoa(srvInfo.UserID))
@@ -194,7 +205,7 @@ func handleMsg(data *types.Event) {
 
 			SendSpaceMsg(info, data.MessageType, id, flag)
 
-		case "live_status":
+		case "&amp;直播状态":
 			var msg string
 			userInfo := client.GetCardInfo(srvInfo.UserID)
 			info := client.GetLiveRoomInfo(strconv.Itoa(srvInfo.RoomID))
@@ -205,11 +216,12 @@ func handleMsg(data *types.Event) {
 			case 1:
 				msg = fmt.Sprintf("%s直播中!\n", userInfo.Data.Card.Name) +
 					fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
-					fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
+					fmt.Sprintf("当前有%d人正在观看~\n", info.Data.Online) +
+					fmt.Sprintf("[CQ:image,file=%s]", info.Data.UserCover)
 			case 2:
 				msg = fmt.Sprintf("%s轮播中!\n", userInfo.Data.Card.Name) +
 					fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
-					fmt.Sprintf("[CQ:image,file=%s]", info.Data.Keyframe)
+					fmt.Sprintf("[CQ:image,file=%s]", info.Data.UserCover)
 			}
 
 			err := client.SendNotificationMsg(data.MessageType, id, msg)

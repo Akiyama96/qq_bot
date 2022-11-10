@@ -1,5 +1,8 @@
 ###获取直播间信息
-GET https://api.live.bilibili.com/room/v1/Room/get_info?room_id=21013446
+GET https://api.live.bilibili.com/room/v1/Room/get_info?room_id=26088559
+
+###
+GET https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld?mid=1063558832
 
 
 ###获取用户动态
@@ -38,3 +41,6 @@ Content-Type: application/json
 {
   "num":1
 }
+
+###
+GET http://81.70.100.130/api/xiaoai.php?msg=你好&n=text
