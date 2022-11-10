@@ -102,7 +102,7 @@ func handleMsg(data *types.Event) {
 		}
 	}
 
-	if len(data.Message) > 22 {
+	if len(data.Message) > 23 {
 		if data.Message[0:21] == "[CQ:at,qq=1497312823]" {
 			client.Xiaoai(data.MessageType, id, data.Message)
 			//err := client.SendNotificationMsg(data.MessageType, id, "确实")

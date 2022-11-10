@@ -20,6 +20,11 @@ func Xiaoai(msgType string, id int, msg string) {
 		log.Println(err)
 	}
 
+	if res.Response.StatusCode != 200 {
+		err = SendNotificationMsg(msgType, id, "bot不会")
+		return
+	}
+
 	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println(err)

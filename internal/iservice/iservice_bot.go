@@ -55,7 +55,7 @@ func NotificationService(ctx context.Context, roomID, groupID int) {
 func Space(ctx context.Context, userID, groupID int) {
 	var flag, flag1 int
 	var userIDString = strconv.Itoa(userID)
-	var lastId string
+	var last string
 	for {
 		select {
 		case <-ctx.Done():
@@ -85,12 +85,12 @@ func Space(ctx context.Context, userID, groupID int) {
 			}
 
 			if flag > 0 {
-				if lastId != info.Data.Items[flag1].IdStr {
+				if info.Data.Items[flag1].Modules.ModuleDynamic.Desc != nil && info.Data.Items[flag].Modules.ModuleDynamic.Desc.Text != last {
 					SendSpaceMsg(info, "group", groupID, flag1)
 				}
 			}
 
-			lastId = info.Data.Items[flag1].IdStr
+			last = info.Data.Items[flag1].Modules.ModuleDynamic.Desc.Text
 		}
 
 		flag = 1
