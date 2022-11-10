@@ -8,7 +8,8 @@
 
 ### 配置监控服务
 
-```json cmd srvcg {
+```json 
+cmd srvcg {
 "name": "lulu",
 "user_id":387636363,
 "room_id":21013446,
