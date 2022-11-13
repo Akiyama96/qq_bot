@@ -27,7 +27,7 @@ func NewLiveServiceAdd(service types.BilibiliService) {
 	ctx, cancel := context.WithCancel(context.Background())
 	ctxMap.Store(key, cancel)
 
-	go NotificationService(ctx, service.RoomID, service.GroupID)
+	go NotificationService(ctx, service)
 
 	//err = client.SendNotificationMsg(
 	//	"group",

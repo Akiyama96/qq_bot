@@ -3,15 +3,17 @@ package iservice
 import (
 	"QQ_bot/error_nt"
 	"QQ_bot/internal/client"
+	"QQ_bot/types"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
 	"time"
 )
 
-func NotificationService(ctx context.Context, roomID, groupID int) {
-	roomIDString := strconv.Itoa(roomID)
+func NotificationService(ctx context.Context, service types.BilibiliService) {
+	roomIDString := strconv.Itoa(service.RoomID)
 	var liveStatus, times, flag int64
 
 	for {
@@ -19,8 +21,8 @@ func NotificationService(ctx context.Context, roomID, groupID int) {
 		case <-ctx.Done():
 			error_nt.SendInfo(fmt.Sprintf(
 				"Service \nRoomID:%d,\nGroupID:%d\n has been stopped.",
-				roomID,
-				groupID,
+				service.RoomID,
+				service.GroupID,
 			))
 			return
 		default:
@@ -40,7 +42,7 @@ func NotificationService(ctx context.Context, roomID, groupID int) {
 			}
 
 			if flag == 1 {
-				SendNotification(info, times, liveStatus, groupID)
+				SendNotification(info, times, liveStatus, service.GroupID, service.AtAll)
 			}
 
 			liveStatus = int64(info.Data.LiveStatus)
@@ -55,7 +57,7 @@ func NotificationService(ctx context.Context, roomID, groupID int) {
 func Space(ctx context.Context, userID, groupID int) {
 	var flag, flag1 int
 	var userIDString = strconv.Itoa(userID)
-	var last string
+	var last []byte
 	for {
 		select {
 		case <-ctx.Done():
@@ -76,24 +78,26 @@ func Space(ctx context.Context, userID, groupID int) {
 			continue
 		}
 
-		if len(info.Data.Items) > 1 {
-
+		if len(info.Data.Items) > 2 {
 			if info.Data.Items[0].Modules.ModuleTag.Text == "置顶" {
 				flag1 = 1
 			} else {
 				flag1 = 0
 			}
 
-			if flag > 0 {
-				if info.Data.Items[flag1].Modules.ModuleDynamic.Desc != nil && info.Data.Items[flag].Modules.ModuleDynamic.Desc.Text != last {
+			if flag > 0 && info.Data.Items[flag1].Modules.ModuleDynamic.Desc != nil {
+				last1, _ := json.Marshal(info.Data.Items[flag1].Modules.ModuleDynamic.Desc)
+				if len(last1) != len(last) {
 					SendSpaceMsg(info, "group", groupID, flag1)
 				}
 			}
 
-			last = info.Data.Items[flag1].Modules.ModuleDynamic.Desc.Text
+			if info.Data.Items[flag1].Modules.ModuleDynamic.Desc != nil {
+				last, _ = json.Marshal(info.Data.Items[flag1].Modules.ModuleDynamic.Desc)
+				flag = 1
+			}
 		}
 
-		flag = 1
 		time.Sleep(30 * time.Second)
 	}
 }

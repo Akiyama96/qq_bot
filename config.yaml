@@ -5,10 +5,10 @@ database:
     file: "{Y-m-d}-sql.log"         # 日志文件格式。默认为"{Y-m-d}.log"
     stdout: false
   default:
-    host: "192.168.3.11"           # 地址
+    host: "localhost"              # 地址
     port: "3306"                   # 端口
-    user: "root"                   # 账号
-    pass: "9696"                   # 密码
+    user: "qq_bot"                 # 账号
+    pass: "Akiyamamio96"           # 密码
     name: "qq_bot"                 # 数据库名称
     type: "mysql"                  # 数据库类型(mysql/pgsql/mssql/sqlite/oracle)
     role: "master"                 # "(可选)数据库主从角色(master/slave)，不使用应用层的主从机制请均设置为master"
@@ -19,11 +19,11 @@ database:
 # http服务配置
 http:
   isEnable: true           # http服务是否开启
-  address: "192.168.3.96"  # http服务地址
+  address: "127.0.0.1"  # http服务地址
   port: 5701               # http端口
 
 # qq_bot服务配置
 bot:
-  address: "192.168.3.11"    # http服务地址
+  address: "127.0.0.1"    # http服务地址
   port: 5700                 # http端口
   qq: 1131568220             # 通知到的qq

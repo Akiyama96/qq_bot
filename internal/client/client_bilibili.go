@@ -13,7 +13,7 @@ import (
 const (
 	getLiveRoomInfo = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id="
 	getStatInfo     = "https://api.bilibili.com/x/relation/stat?vmid="
-	getSpaceInfo    = "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space?offset=&host_mid="
+	getSpaceInfo    = "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space"
 )
 
 func GetLiveRoomInfo(roomId string) *types.LiveRoomInfo {
@@ -71,8 +71,8 @@ func GetSpaceInfo(mid string) *types.SpaceInfo {
 
 	client := g.Client()
 
-	res, err := client.Get(context.Background(), getSpaceInfo+mid+"&timezone_offset=-480")
-	if err != nil {
+	res, err := client.Get(context.Background(), getSpaceInfo+fmt.Sprintf("?offset=&host_mid=%s&timezone_offset=-480", mid))
+	if err != nil || res.Response.StatusCode != 200 {
 		log.Println(err)
 		return nil
 	}

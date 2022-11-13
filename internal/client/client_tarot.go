@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-const tarotURL = "http://localhost:8000/api/v1/cards/random?n=1"
+const tarotURL = "https://rws-cards-api.herokuapp.com/api/v1/cards/random?n=1"
 
 func GetTarotCard() *types.TarotCard {
 	var (

@@ -16,9 +16,11 @@ import (
 
 var tarotTime sync.Map
 
+var spaceMap sync.Map
+
 var lastTime int64
 
-func SendNotification(info *types.LiveRoomInfo, times, beforeStatus int64, groupID int) {
+func SendNotification(info *types.LiveRoomInfo, times, beforeStatus int64, groupID, atAll int) {
 	var msg string
 
 	userInfo := client.GetCardInfo(info.Data.Uid)
@@ -34,7 +36,11 @@ func SendNotification(info *types.LiveRoomInfo, times, beforeStatus int64, group
 			msg = fmt.Sprintf("%s开播啦!\n", userInfo.Data.Card.Name) +
 				fmt.Sprintf("直播间地址：https://live.bilibili.com/%d\n", info.Data.RoomId) +
 				fmt.Sprintf("当前有%d人正在观看~\n", info.Data.Online) +
-				fmt.Sprintf("[CQ:image,file=%s]", info.Data.UserCover)
+				fmt.Sprintf("[CQ:image,file=%s]\n", info.Data.UserCover)
+
+			if atAll == 1 {
+				msg += fmt.Sprintf("[CQ:at,qq=all]")
+			}
 		}
 	case 2:
 		if beforeStatus == 1 {
@@ -79,7 +85,7 @@ func HandleEvent(data *types.Event) {
 
 func handleMsg(data *types.Event) {
 
-	var id int
+	var id, falgAll int
 
 	if data.MessageType == "group" {
 		id = data.GroupId
@@ -90,6 +96,8 @@ func handleMsg(data *types.Event) {
 	if len(data.Message) > 11 && data.Message[:3] == "cmd" && data.Sender.UserId == config.Srv.Bot.QQ {
 		switch data.Message[4:9] {
 		case "srvcg":
+			falgAll = 1
+
 			cmd := []byte(data.Message[10:])
 			serviceInfo := types.BilibiliService{}
 			err := json.Unmarshal(cmd, &serviceInfo)
@@ -104,6 +112,11 @@ func handleMsg(data *types.Event) {
 
 	if len(data.Message) > 23 {
 		if data.Message[0:21] == "[CQ:at,qq=1497312823]" {
+
+			falgAll = 1
+
+			data.Message = data.Message[22:]
+
 			client.Xiaoai(data.MessageType, id, data.Message)
 			//err := client.SendNotificationMsg(data.MessageType, id, "确实")
 			//if err != nil {
@@ -116,6 +129,9 @@ func handleMsg(data *types.Event) {
 		switch data.Message[0:12] {
 
 		case "来点色图":
+
+			falgAll = 1
+
 			if (time.Now().Unix() - lastTime) < 10 {
 				err := client.SendNotificationMsg(data.MessageType, id, fmt.Sprintf("CD中...%d", 10-(time.Now().Unix()-lastTime)))
 				if err != nil {
@@ -230,6 +246,11 @@ func handleMsg(data *types.Event) {
 			}
 		}
 	}
+
+	if data.MessageType == "private" && falgAll == 0 {
+		client.Xiaoai(data.MessageType, id, data.Message)
+	}
+
 }
 
 func SendSpaceMsg(info *types.SpaceInfo, target string, id, flag int) {
@@ -239,6 +260,10 @@ func SendSpaceMsg(info *types.SpaceInfo, target string, id, flag int) {
 			log.Println(r)
 		}
 	}()
+
+	if info == nil || len(info.Data.Items) < 2 {
+		return
+	}
 
 	topic = info.Data.Items[flag].Modules.ModuleAuthor.Name + " " + info.Data.Items[flag].Modules.ModuleAuthor.PubAction
 	url = info.Data.Items[flag].Modules.ModuleAuthor.JumpUrl
@@ -252,6 +277,13 @@ func SendSpaceMsg(info *types.SpaceInfo, target string, id, flag int) {
 	}
 
 	msg = fmt.Sprintf(topic + "\n" + url + "\n" + text + "\n" + pic)
+
+	if _, ok := spaceMap.Load(msg); ok {
+		error_nt.SendInfo("space resend error")
+		return
+	}
+
+	spaceMap.Store(msg, 1)
 
 	err := client.SendNotificationMsg(target, id, msg)
 	if err != nil {

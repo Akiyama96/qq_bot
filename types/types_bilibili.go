@@ -405,6 +405,7 @@ type BilibiliService struct {
 	RoomID            int    `json:"room_id"`
 	LiveNotification  int    `json:"live_notification"`
 	SpaceNotification int    `json:"space_notification"`
+	AtAll             int    `json:"at_all"`
 }
 
 type BilibiliUserInfo struct {
