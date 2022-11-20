@@ -41,6 +41,7 @@ func UpdateBilibiliServiceInfo(serviceInfo types.BilibiliService) {
 		"group_id":           serviceInfo.GroupID,
 		"space_notification": serviceInfo.SpaceNotification,
 		"live_notification":  serviceInfo.LiveNotification,
+		"at_all":             serviceInfo.AtAll,
 	})
 	if err != nil {
 		error_nt.SendInfo(err.Error())

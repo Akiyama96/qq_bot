@@ -148,6 +148,15 @@ func handleMsg(data *types.Event) {
 				log.Println(err)
 			}
 		}
+
+		switch data.Message[0:9] {
+		case "查成分":
+
+			falgAll = 1
+
+			//userName := data.Message[10:]
+
+		}
 	}
 
 	if data.MessageType == "group" {
