@@ -44,3 +44,13 @@ Content-Type: application/json
 
 ###
 GET http://81.70.100.130/api/xiaoai.php?msg=你好&n=text
+
+cmd srvcg {
+"name": "lulu",
+"user_id":387636363,
+"room_id":21013446,
+"group_id": 902655440,
+"space_notification": 1,
+"live_notification": 1,
+"at_all": 1
+}
